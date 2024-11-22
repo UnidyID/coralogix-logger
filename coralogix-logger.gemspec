@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "lib/coralogix/coralogix_logger"
+require_relative "lib/coralogix_logger"
 
 Gem::Specification.new do |spec|
   spec.name = "coralogix_logger"
