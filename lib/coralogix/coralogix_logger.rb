@@ -36,7 +36,7 @@ module Coralogix
         #
         # @return [boolean]    -   true or false. (Default is false)
         def self.debug_mode?
-            DebugLogger.debug_mode
+            DebugLogger.debug_mode?
         end
 
         # A setter for debug_mode. 
