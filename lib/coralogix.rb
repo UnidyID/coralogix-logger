@@ -1,0 +1,2 @@
+module Coralogix
+end
