@@ -1,4 +1,5 @@
 module Coralogix
+    VERSION = '0.0.25'
 
     #Maximum log buffer size
     MAX_LOG_BUFFER_SIZE = 12582912 #12mb

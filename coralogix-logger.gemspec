@@ -3,22 +3,22 @@
 require_relative "lib/coralogix/coralogix_logger"
 
 Gem::Specification.new do |spec|
-  spec.name = "coralogix-logger"
-  spec.version = Coralogix::Logger::VERSION
+  spec.name = "coralogix_logger"
+  spec.version = Coralogix::VERSION
   spec.authors = ["Fran Zekan"]
   spec.email = ["zekan.fran369@gmail.com"]
 
-  spec.summary = "TODO: Write a short summary, because RubyGems requires one."
-  spec.description = "TODO: Write a longer description or delete this line."
-  spec.homepage = "TODO: Put your gem's website or public repo URL here."
+  spec.summary = "Coralogix logger for Ruby on Rails"
+  spec.description = "So Coralogix was incapable of a) writing code that doesn't break and that follows standards, b) having a OSS repo where people can fix their shitty code"
+  spec.homepage = "https://github.com/UnidyID/coralogix-logger"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
-  spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = spec.homepage
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
