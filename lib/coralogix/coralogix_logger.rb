@@ -130,7 +130,11 @@ module Coralogix
         SEVERITIES.keys.each do |severity|
             define_method("#{severity}") do |message, category: @category, className: "", methodName: "", threadId: Thread.current.object_id.to_s|
                 LoggerManager.add_logline message, SEVERITIES["#{__method__}".to_sym], category, :className => className, :methodName => methodName, :threadId => threadId
-            end  
+            end
+
+            define_method("#{severity}?") do
+                true
+            end
         end
 
         # Logger interface: 
