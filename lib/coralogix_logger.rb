@@ -128,9 +128,9 @@ module Coralogix
         # For instance, for info severity it will create a method:
         # def info message, category: @category, className: "", methodName: "", threadId: ""
         SEVERITIES.keys.each do |severity|
-            define_method("#{severity}") do |message=nil, category: @category, className: "", methodName: "", threadId: Thread.current.object_id.to_s|
+            define_method("#{severity}") do |message=nil, category: @category, className: "", methodName: "", threadId: Thread.current.object_id.to_s, &block|
                 if block_given?
-                    message = yield
+                    message = block.call
                 elsif message.nil?
                     raise ArgumentError, "A message must be provided"
                 end
