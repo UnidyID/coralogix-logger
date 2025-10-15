@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+module Coralogix
+  # A Rails 8-compatible logger that sends logs to Coralogix.
+  class Logger < ::Logger
+    # --- Class instance variables ---
+    self.@print_stack_trace: bool
+    self.@stack_frame: Integer
+    self.@category: String
+
+    # --- Class-level configuration for stack traces ---
+    def self.print_stack_trace: () -> bool
+    def self.print_stack_trace=: (bool) -> bool
+    def self.stack_frame: () -> Integer
+    def self.stack_frame=: (Integer) -> Integer
+
+    # --- Instance attributes and methods ---
+    attr_accessor use_source_file: bool
+
+    def initialize: (String name) -> void
+
+    # Overridden from ::Logger to handle structured logging and send to Coralogix.
+    def add: (Integer severity, (String | Exception | Hash[untyped, untyped])? message, String? progname) { () -> (String | Exception | Hash[untyped, untyped]) } -> bool
+
+    # Flushes the log buffer before closing.
+    def close: () -> void
+
+    private
+
+    def source_file: () -> String?
+  end
+end

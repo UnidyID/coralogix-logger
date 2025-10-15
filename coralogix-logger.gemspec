@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "lib/coralogix_logger"
+require_relative 'lib/coralogix_logger/version'
 
 Gem::Specification.new do |spec|
   spec.name = "coralogix_logger"
   spec.version = Coralogix::VERSION
-  spec.authors = ["Fran Zekan"]
-  spec.email = ["zekan.fran369@gmail.com"]
+  spec.authors = ["Fran Zekan", "Burkhard Vogel"]
+  spec.email = ["zekan.fran369@gmail.com", "burkhard.vogel@gmail.com"]
 
   spec.summary = "Coralogix logger for Ruby on Rails"
-  spec.description = "So Coralogix was incapable of a) writing code that doesn't break and that follows standards, b) having a OSS repo where people can fix their shitty code"
+  spec.description = "So Coralogix was missing any kind of rails 8 compatible logger."
   spec.homepage = "https://github.com/UnidyID/coralogix-logger"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
@@ -34,8 +34,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency "logger", "~> 1.0"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.add_development_dependency "benchmark"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "rubocop", "~> 1.0"
 end

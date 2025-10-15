@@ -1,0 +1,21 @@
+# frozen_string_literal: true
+
+# The main module for the Coralogix Ruby logger.
+module Coralogix
+  # Public API methods defined on the Coralogix module itself.
+  def self.configure: (String api_key, String app_name, String sub_system, ?ssl_verify_peer: bool) -> void
+
+  def self.get_logger: (String name) -> Coralogix::Logger
+
+  def self.flush: () -> void
+
+  # --- SDK Configuration Options ---
+
+  def self.debug_mode=: (bool) -> bool
+
+  def self.debug_mode?: () -> bool
+
+  def self.print_stack_trace=: (bool) -> bool
+
+  def self.stack_frame=: (Integer) -> Integer
+end

@@ -1,0 +1,36 @@
+# frozen_string_literal: true
+
+module Coralogix
+  # @private
+  class Manager
+    include Singleton
+
+    # --- Singleton instance variables ---
+    self.@mutex: Monitor
+    self.@configured: bool
+    self.@application_name: String
+    self.@subsystem_name: String
+    self.@computer_name: String
+    self.@http_sender: Coralogix::HttpSender
+    self.@buffer: Array[Hash[Symbol, untyped]]
+    self.@buffer_size: Integer
+    self.@process_id: Integer
+
+    # --- Class-level convenience methods ---
+    def self.configure: (private_key: String, application_name: String, subsystem_name: String, ?ssl_verify_peer: bool) -> void
+
+    def self.add_logline: (String message, Integer severity, String category, **untyped args) -> void
+
+    def self.flush: () -> void
+
+    def self.configured: () -> bool
+
+    # --- Instance methods ---
+
+    def configure: (private_key: String, application_name: String, subsystem_name: String, ?ssl_verify_peer: bool) -> void
+
+    def add_logline: (String message, Integer severity, String category, **untyped args) -> void
+
+    def flush: () -> void
+  end
+end
