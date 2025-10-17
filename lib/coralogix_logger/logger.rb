@@ -39,31 +39,10 @@ module Coralogix
       progname ||= @category
 
       if message.nil?
-        if block_given?
-          message = yield
-        else
-          message = progname
-          progname = @category
-        end
+        message, progname = block_given? ? [yield, progname] : [progname, @category]
       end
 
-      # Use the formatter to process the message into a JSON string.
-      json_message = format_message(format_severity(severity), Time.now, progname, message)
-
-      # Map Ruby's logger severity levels to Coralogix's levels.
-      coralogix_severity = case severity
-                           when DEBUG then Severity::DEBUG
-                           when INFO then Severity::INFO
-                           when WARN then Severity::WARNING
-                           when ERROR then Severity::ERROR
-                           when FATAL then Severity::CRITICAL
-                           else Severity::VERBOSE
-                           end
-
-      class_name = source_file if @use_source_file
-      thread_id = Thread.current.object_id.to_s
-
-      Manager.add_logline(json_message, coralogix_severity, progname, className: class_name, threadId: thread_id)
+      send_log(severity, progname, message)
       true
     end
 
@@ -73,6 +52,29 @@ module Coralogix
     end
 
     private
+
+    def send_log(severity, progname, message)
+      json_message = format_message(format_severity(severity), Time.now, progname, message)
+      Manager.add_logline(json_message, to_coralogix_severity(severity), progname, **gather_metadata)
+    end
+
+    def to_coralogix_severity(severity)
+      case severity
+      when DEBUG then Severity::DEBUG
+      when INFO then Severity::INFO
+      when WARN then Severity::WARNING
+      when ERROR then Severity::ERROR
+      when FATAL then Severity::CRITICAL
+      else Severity::VERBOSE
+      end
+    end
+
+    def gather_metadata
+      {
+        className: (@use_source_file ? source_file : nil),
+        threadId: Thread.current.object_id.to_s
+      }.compact
+    end
 
     # Return the file name where the call to the logger was made.
     def source_file

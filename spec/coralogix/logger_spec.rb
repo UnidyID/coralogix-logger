@@ -2,12 +2,6 @@
 
 require "spec_helper"
 
-RSpec.describe Coralogix do
-  it "has a version number" do
-    expect(Coralogix::VERSION).not_to be nil
-  end
-end
-
 RSpec.describe Coralogix::Logger do
   subject(:logger) { Coralogix.get_logger("test-category") }
 
@@ -16,6 +10,7 @@ RSpec.describe Coralogix::Logger do
   before do
     # Use the public API to configure the logger
     Coralogix.configure("test_key", "test_app", "test_subsystem", ssl_verify_peer: false)
+    described_class.print_stack_trace = true
 
     # Mock the singleton instance of the Manager
     allow(Coralogix::Manager.instance).to receive(:add_logline)

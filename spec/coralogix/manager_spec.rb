@@ -10,13 +10,13 @@ RSpec.describe Coralogix::Manager do
   before do
     # Reset the singleton instance before each test to ensure a clean state.
     # This is crucial for testing singletons.
-    Singleton.send(:__init__, Coralogix::Manager)
+    Singleton.send(:__init__, described_class)
 
     # Mock the HttpSender to prevent actual network calls and to capture its input.
     allow(Coralogix::HttpSender).to receive(:new).and_return(http_sender_double)
   end
 
-  it "sends a payload conforming to the Coralogix API schema" do
+  it "sends a payload conforming to the Coralogix API schema" do # rubocop:disable RSpec/MultipleExpectations
     # 1. Configure the SDK using the public API
     Coralogix.configure("test_key", "my_app", "my_subsystem")
 

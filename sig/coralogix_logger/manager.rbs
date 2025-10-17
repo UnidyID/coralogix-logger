@@ -1,36 +1,58 @@
-# frozen_string_literal: true
-
 module Coralogix
   # @private
+  # A singleton class that manages buffering and sending logs to Coralogix.
   class Manager
     include Singleton
 
-    # --- Singleton instance variables ---
-    self.@mutex: Monitor
-    self.@configured: bool
-    self.@application_name: String
-    self.@subsystem_name: String
-    self.@computer_name: String
-    self.@http_sender: Coralogix::HttpSender
-    self.@buffer: Array[Hash[Symbol, untyped]]
-    self.@buffer_size: Integer
-    self.@process_id: Integer
+    # --- Constants ---
+    MAX_LOG_BUFFER_SIZE: Integer
+    MAX_LOG_CHUNK_SIZE: Integer
+    NORMAL_SEND_SPEED_INTERVAL: Integer
+    FAST_SEND_SPEED_INTERVAL: Integer
+    CORALOGIX_CATEGORY: String
 
-    # --- Class-level convenience methods ---
-    def self.configure: (private_key: String, application_name: String, subsystem_name: String, ?ssl_verify_peer: bool) -> void
-
-    def self.add_logline: (String message, Integer severity, String category, **untyped args) -> void
-
-    def self.flush: () -> void
-
-    def self.configured: () -> bool
+    # --- Instance variables ---
+    @buffer: Array[Hash[Symbol, untyped]]
+    @buffer_size: Integer
+    @mutex: Monitor
+    @process_id: Integer
+    @configured: bool
+    @application_name: String
+    @subsystem_name: String
+    @computer_name: String
+    @http_sender: HttpSender
 
     # --- Instance methods ---
 
-    def configure: (private_key: String, application_name: String, subsystem_name: String, ?ssl_verify_peer: bool) -> void
+    def initialize: () -> void
 
-    def add_logline: (String message, Integer severity, String category, **untyped args) -> void
+    def configure: (
+        private_key: String,
+        application_name: String,
+        subsystem_name: String,
+        ssl_verify_peer: bool
+      ) -> void
+
+    def add_logline: (message: untyped, severity: Integer?, category: String?, **args: untyped) -> void
 
     def flush: () -> void
+
+    # --- Private instance methods ---
+
+    private
+
+    def run_sender_thread: () -> Thread
+    def send_bulk: () -> void
+    def chunk_size: () -> Integer
+    def reinit_if_forked: () -> void
+    def msg2str: (untyped msg) -> String
+
+    # --- Class methods ---
+    class << self
+    def configure: (**args: untyped) -> void
+    def add_logline: (untyped, Integer?, String?, **untyped) -> void
+    def flush: () -> void
+    def configured: () -> bool
+    end
   end
 end
