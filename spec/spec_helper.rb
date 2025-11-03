@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-require "coralogix/logger"
+# This line loads the main entry point of your gem, making all its classes
+# available to the specs.
+require "coralogix_logger"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

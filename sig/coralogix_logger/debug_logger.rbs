@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+module Coralogix
+  # @private
+  class DebugLogger
+    # --- Class instance variables ---
+    self.@mutex: Mutex
+    self.@debug: bool
+    self.@logger: ::Logger?
+
+    # --- Class methods ---
+    def self.initialize: () -> void
+
+    def self.debug_mode?: () -> bool
+
+    def self.debug_mode=: (bool) -> void
+
+    # Define singleton methods for each log level
+    def self.debug: (*untyped) -> void
+    def self.info: (*untyped) -> void
+    def self.warn: (*untyped) -> void
+    def self.error: (*untyped) -> void
+    def self.fatal: (*untyped) -> void
+  end
+end

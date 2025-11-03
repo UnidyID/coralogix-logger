@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+module Coralogix
+  # @private
+  class HttpSender
+    # --- Instance variables ---
+    @uri: URI::Generic
+    @http: Net::HTTP
+    @req: Net::HTTP::Post
+
+    # --- Instance methods ---
+    def initialize: (String api_key, ?ssl_verify_peer: bool, ?disable_proxy: bool) -> void
+
+    def send_request: (String json_bulk) -> bool
+
+    private
+
+    def default_http_request: -> Net::HTTP
+    def attempt_send: -> bool
+    def perform_request: -> Net::HTTPResponse
+    def handle_response: -> bool
+  end
+end
