@@ -18,6 +18,7 @@ module Coralogix
       run_sender_thread
     end
 
+    # rubocop:disable Metrics/MethodLength
     def configure(private_key:, application_name:, subsystem_name:, ssl_verify_peer: true, disable_proxy: false)
       @mutex.synchronize do
         return if @configured
@@ -33,14 +34,10 @@ module Coralogix
         DebugLogger.info "Coralogix Logger configured successfully."
         @configured = true
       end
+      # rubocop:enable Metrics/MethodLength
 
       # Send startup message outside of mutex to avoid potential deadlock
-      add_logline(
-        "The Application Name #{application_name} and Subsystem Name #{subsystem_name} " \
-        "from the Ruby SDK, version #{Coralogix::VERSION} has started to send data.",
-        Severity::INFO,
-        CORALOGIX_CATEGORY
-      )
+      startup_message
     end
 
     def add_logline(message, severity, category, **args) # rubocop:disable Metrics/MethodLength
@@ -82,6 +79,15 @@ module Coralogix
     end
 
     private
+
+    def startup_message
+      add_logline(
+        "The Application Name #{@application_name} and Subsystem Name #{@subsystem_name} " \
+        "from the Ruby SDK, version #{Coralogix::VERSION} has started to send data.",
+        Severity::INFO,
+        CORALOGIX_CATEGORY
+      )
+    end
 
     def run_sender_thread
       thread = Thread.new do
