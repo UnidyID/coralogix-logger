@@ -19,13 +19,22 @@ module Coralogix
     # @param app_name [String] The name of your application.
     # @param sub_system [String] The name of the subsystem within your application.
     # @param ssl_verify_peer [Boolean] Whether to enforce SSL peer verification. Defaults to true.
-    def configure(api_key, app_name, sub_system, ssl_verify_peer: true)
+    # @param disable_proxy [Boolean] Whether to disable HTTP proxy usage. Defaults to false.
+    def configure(api_key, app_name, sub_system, ssl_verify_peer: true, disable_proxy: false)
       Manager.configure(
         private_key: api_key,
         application_name: app_name,
         subsystem_name: sub_system,
-        ssl_verify_peer: ssl_verify_peer
+        ssl_verify_peer: ssl_verify_peer,
+        disable_proxy: disable_proxy
       )
+    end
+
+    # Returns the current version of the Coralogix logger gem.
+    #
+    # @return [String] The version string.
+    def version
+      VERSION
     end
 
     # Creates a new logger instance.

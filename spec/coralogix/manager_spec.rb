@@ -33,8 +33,16 @@ RSpec.describe Coralogix::Manager do
       payload = JSON.parse(json_payload)
       expect(payload).to be_an(Array)
 
-      # The buffer contains only our test log.
-      log_entry = payload.first
+      # The buffer contains the startup message and our test log.
+      expect(payload.size).to eq(2)
+
+      # First entry is the startup message
+      startup_entry = payload[0]
+      expect(startup_entry["category"]).to eq("CORALOGIX")
+      expect(startup_entry["text"]).to include("has started to send data")
+
+      # Second entry is our test log
+      log_entry = payload[1]
       expect(log_entry).to be_a(Hash)
 
       # Assert against the required and optional fields from the API documentation
