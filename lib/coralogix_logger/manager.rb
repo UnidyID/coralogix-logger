@@ -9,12 +9,6 @@ module Coralogix
   class Manager # rubocop:disable Metrics/ClassLength
     include Singleton
 
-    MAX_LOG_BUFFER_SIZE = 1_000_000 # Add if constants aren’t already defined elsewhere
-    MAX_LOG_CHUNK_SIZE = 65_536
-    NORMAL_SEND_SPEED_INTERVAL = 5
-    FAST_SEND_SPEED_INTERVAL = 1
-    CORALOGIX_CATEGORY = "default"
-
     def initialize
       @buffer = []
       @buffer_size = 0
@@ -24,18 +18,26 @@ module Coralogix
       run_sender_thread
     end
 
-    def configure(private_key:, application_name:, subsystem_name:, ssl_verify_peer: true)
+    # rubocop:disable Metrics/MethodLength
+    def configure(private_key:, application_name:, subsystem_name:, ssl_verify_peer: true, disable_proxy: false)
       @mutex.synchronize do
         return if @configured
 
+        @private_key = private_key
         @application_name = application_name
         @subsystem_name = subsystem_name
+        @ssl_verify_peer = ssl_verify_peer
+        @disable_proxy = disable_proxy
         @computer_name = `hostname`.strip
-        @http_sender = HttpSender.new(private_key, ssl_verify_peer: ssl_verify_peer)
+        @http_sender = HttpSender.new(private_key, ssl_verify_peer: ssl_verify_peer, disable_proxy: disable_proxy)
 
         DebugLogger.info "Coralogix Logger configured successfully."
         @configured = true
       end
+      # rubocop:enable Metrics/MethodLength
+
+      # Send startup message outside of mutex to avoid potential deadlock
+      startup_message
     end
 
     def add_logline(message, severity, category, **args) # rubocop:disable Metrics/MethodLength
@@ -78,6 +80,15 @@ module Coralogix
 
     private
 
+    def startup_message
+      add_logline(
+        "The Application Name #{@application_name} and Subsystem Name #{@subsystem_name} " \
+        "from the Ruby SDK, version #{Coralogix::VERSION} has started to send data.",
+        Severity::INFO,
+        CORALOGIX_CATEGORY
+      )
+    end
+
     def run_sender_thread
       thread = Thread.new do
         loop do
@@ -91,17 +102,22 @@ module Coralogix
     end
 
     def send_bulk # rubocop:disable Metrics/MethodLength
-      return if @buffer.empty?
-
       logs_to_send = []
+      http_sender = nil
+
       @mutex.synchronize do
+        return if @buffer.empty?
+
         size = chunk_size
         return if size.zero?
 
         logs_to_send = @buffer.shift(size)
         @buffer_size -= logs_to_send.to_json.bytesize
         @buffer_size = 0 if @buffer_size.negative?
+        http_sender = @http_sender
       end
+
+      return if logs_to_send.empty? || http_sender.nil?
 
       payload = logs_to_send.map do |log_entry|
         {
@@ -111,7 +127,7 @@ module Coralogix
         }.merge(log_entry)
       end
 
-      @http_sender.send_request(payload.to_json) unless payload.empty?
+      http_sender.send_request(payload.to_json)
     end
 
     def chunk_size
@@ -123,10 +139,12 @@ module Coralogix
     def reinit_if_forked
       return if Process.pid == @process_id
 
-      DebugLogger.info "Process forked. Re-initializing logger buffer."
+      DebugLogger.info "Process forked. Re-initializing logger buffer, HTTP sender, and sender thread."
       @buffer.clear
       @buffer_size = 0
       @process_id = Process.pid
+      @http_sender = HttpSender.new(@private_key, ssl_verify_peer: @ssl_verify_peer, disable_proxy: @disable_proxy)
+      run_sender_thread
     end
 
     def msg2str(msg) # rubocop:disable Metrics/MethodLength
