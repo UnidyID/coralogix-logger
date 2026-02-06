@@ -1,5 +1,7 @@
 .idea
+.vscode
 .bundle
+Gemfile.lock
 .yardoc
 _yardoc
 coverage
